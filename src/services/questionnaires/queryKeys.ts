@@ -10,6 +10,9 @@ export const questionnairesKeys = {
     questionnaireQueryKey(id: string) {
         return [...questionnairesKeys.all(), 'detail', id] as const;
     },
+    publicQueryKey(id: string) {
+        return [...questionnairesKeys.all(), 'public', id] as const;
+    },
     createMutationKey() {
         return [...questionnairesKeys.all(), 'create'] as const;
     },

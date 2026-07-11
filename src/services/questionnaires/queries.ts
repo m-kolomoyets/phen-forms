@@ -3,6 +3,7 @@ import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import {
     createQuestionnaire,
     deleteQuestionnaire,
+    getPublicQuestionnaire,
     getQuestionnaire,
     getQuestionnaires,
     updateQuestionnaire,
@@ -21,6 +22,15 @@ export const questionnaireQueryOptions = (id: string) => {
         queryKey: questionnairesKeys.questionnaireQueryKey(id),
         queryFn() {
             return getQuestionnaire(id);
+        },
+    });
+};
+
+export const publicQuestionnaireQueryOptions = (id: string) => {
+    return queryOptions({
+        queryKey: questionnairesKeys.publicQueryKey(id),
+        queryFn() {
+            return getPublicQuestionnaire(id);
         },
     });
 };

@@ -30,6 +30,19 @@ export const getQuestionnaire = async (id: string) => {
     return data;
 };
 
+// Anonymous read path for the public fill-in. RLS exposes only published
+// questionnaires to anon, so a draft/closed/missing id returns null — the
+// fill-in shows an "unavailable" screen instead of erroring.
+export const getPublicQuestionnaire = async (id: string) => {
+    const { data, error } = await supabase.from('questionnaires').select('*').eq('id', id).maybeSingle();
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+};
+
 export const createQuestionnaire = async (payload: CreateQuestionnairePayload) => {
     const {
         data: { user },

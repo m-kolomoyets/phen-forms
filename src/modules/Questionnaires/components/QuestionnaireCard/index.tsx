@@ -1,6 +1,7 @@
 import type { QuestionnaireCardProps } from './types';
 import { Link } from '@tanstack/react-router';
 import {
+    ChartColumnIcon,
     EllipsisVerticalIcon,
     EyeIcon,
     LinkIcon,
@@ -39,7 +40,7 @@ function QuestionnaireCard({
     const isDraft = questionnaire.status === 'draft';
 
     const handleCopyLink = async () => {
-        const url = `${window.location.origin}/f/${questionnaire.id}`;
+        const url = `${window.location.origin}/q/${questionnaire.id}`;
 
         try {
             await navigator.clipboard.writeText(url);
@@ -94,6 +95,17 @@ function QuestionnaireCard({
                             >
                                 <EyeIcon />
                                 Preview as recipient
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                render={
+                                    <Link
+                                        to="/questionnaires/$questionnaireId/results"
+                                        params={{ questionnaireId: questionnaire.id }}
+                                    />
+                                }
+                            >
+                                <ChartColumnIcon />
+                                View results
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
 

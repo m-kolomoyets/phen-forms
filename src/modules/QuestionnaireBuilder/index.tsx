@@ -6,12 +6,14 @@ import { Link } from '@tanstack/react-router';
 import {
     ArrowLeftIcon,
     CheckIcon,
+    LinkIcon,
     LoaderCircleIcon,
     MoreVerticalIcon,
     PencilIcon,
     SendIcon,
     SettingsIcon,
     UndoIcon,
+    UsersIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { questionnaireQueryOptions, updateQuestionnaireMutationOptions } from '@/services/questionnaires/queries';
@@ -26,7 +28,15 @@ import { buildQuestionConfig, getDefaultQuestionFormState } from '@/modules/Ques
 import { MainLayoutHeader } from '@/components/layouts/MainLayoutHeader';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/DropdownMenu';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/Empty';
 import { QUESTIONNAIRE_STATUS_BADGE } from '../Questionnaires/constants';
 import { AddQuestionDialog } from './components/AddQuestionDialog';
@@ -64,6 +74,17 @@ function QuestionnaireBuilder({ questionnaireId }: QuestionnaireBuilderProps) {
     const effectiveQuestion = selectedQuestion ?? questions[0];
 
     const status = QUESTIONNAIRE_STATUS_BADGE[questionnaire.status];
+
+    const handleCopyLink = async () => {
+        const url = `${window.location.origin}/q/${questionnaireId}`;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('Link copied.');
+        } catch {
+            toast.error('Copy failed.');
+        }
+    };
 
     const handleLifecycle = (patch: Parameters<typeof updateQuestionnaire>[0], message: string) => {
         updateQuestionnaire(patch, {
@@ -243,7 +264,21 @@ function QuestionnaireBuilder({ questionnaireId }: QuestionnaireBuilderProps) {
                                     </Button>
                                 }
                             />
-                            <DropdownMenuContent align="end">
+                            <DropdownMenuContent align="end" className="w-60">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuLabel>Access</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={handleCopyLink}>
+                                        <LinkIcon />
+                                        Copy link to fill
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem disabled>
+                                        <UsersIcon />
+                                        Manage access
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+
+                                <DropdownMenuSeparator />
+
                                 {questionnaire.accepting_responses ? (
                                     <DropdownMenuItem
                                         onClick={() => {

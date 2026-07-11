@@ -11,12 +11,12 @@ screen. Drafts/closed questionnaires are not answerable.
 
 ## Acceptance criteria
 
-- [ ] Public route renders a published questionnaire without login; welcome screen shown when `show_welcome`.
-- [ ] Each of the 7 types renders an appropriate answer input; pagination steps through questions.
-- [ ] Randomization applied at render when flagged; canonical order untouched in storage.
-- [ ] Required answers enforced before submit; submission goes through `submit_response` and shows a confirmation.
-- [ ] Opening a draft or closed questionnaire is blocked with a clear message.
-- [ ] `pnpm tsc` + lint pass.
+- [x] Public route renders a published questionnaire without login; welcome screen shown when `show_welcome`.
+- [x] Each of the 7 types renders an appropriate answer input; pagination steps through questions.
+- [x] Randomization applied at render when flagged; canonical order untouched in storage.
+- [x] Required answers enforced before submit; submission goes through `submit_response` and shows a confirmation.
+- [x] Opening a draft or closed questionnaire is blocked with a clear message.
+- [x] `pnpm tsc` + lint pass.
 
 ## Blocked by
 
