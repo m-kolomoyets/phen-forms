@@ -14,8 +14,6 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as UnauthenticatedLoginIndexRouteImport } from './routes/_unauthenticated/login/index'
-import { Route as AuthenticatedVouchersIndexRouteImport } from './routes/_authenticated/vouchers/index'
-import { Route as AuthenticatedMerchantsIndexRouteImport } from './routes/_authenticated/merchants/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const UnauthenticatedRouteRoute = UnauthenticatedRouteRouteImport.update({
@@ -41,18 +39,6 @@ const UnauthenticatedLoginIndexRoute =
     path: '/login/',
     getParentRoute: () => UnauthenticatedRouteRoute,
   } as any)
-const AuthenticatedVouchersIndexRoute =
-  AuthenticatedVouchersIndexRouteImport.update({
-    id: '/vouchers/',
-    path: '/vouchers/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedMerchantsIndexRoute =
-  AuthenticatedMerchantsIndexRouteImport.update({
-    id: '/merchants/',
-    path: '/merchants/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -63,15 +49,11 @@ const AuthenticatedDashboardIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
-  '/merchants/': typeof AuthenticatedMerchantsIndexRoute
-  '/vouchers/': typeof AuthenticatedVouchersIndexRoute
   '/login/': typeof UnauthenticatedLoginIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
-  '/merchants': typeof AuthenticatedMerchantsIndexRoute
-  '/vouchers': typeof AuthenticatedVouchersIndexRoute
   '/login': typeof UnauthenticatedLoginIndexRoute
 }
 export interface FileRoutesById {
@@ -81,15 +63,13 @@ export interface FileRoutesById {
   '/_unauthenticated': typeof UnauthenticatedRouteRouteWithChildren
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
-  '/_authenticated/merchants/': typeof AuthenticatedMerchantsIndexRoute
-  '/_authenticated/vouchers/': typeof AuthenticatedVouchersIndexRoute
   '/_unauthenticated/login/': typeof UnauthenticatedLoginIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard/' | '/merchants/' | '/vouchers/' | '/login/'
+  fullPaths: '/' | '/dashboard/' | '/login/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/merchants' | '/vouchers' | '/login'
+  to: '/' | '/dashboard' | '/login'
   id:
     | '__root__'
     | '/_authenticated'
@@ -97,8 +77,6 @@ export interface FileRouteTypes {
     | '/_unauthenticated'
     | '/_public/'
     | '/_authenticated/dashboard/'
-    | '/_authenticated/merchants/'
-    | '/_authenticated/vouchers/'
     | '/_unauthenticated/login/'
   fileRoutesById: FileRoutesById
 }
@@ -145,20 +123,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthenticatedLoginIndexRouteImport
       parentRoute: typeof UnauthenticatedRouteRoute
     }
-    '/_authenticated/vouchers/': {
-      id: '/_authenticated/vouchers/'
-      path: '/vouchers'
-      fullPath: '/vouchers/'
-      preLoaderRoute: typeof AuthenticatedVouchersIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/merchants/': {
-      id: '/_authenticated/merchants/'
-      path: '/merchants'
-      fullPath: '/merchants/'
-      preLoaderRoute: typeof AuthenticatedMerchantsIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -171,14 +135,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
-  AuthenticatedMerchantsIndexRoute: typeof AuthenticatedMerchantsIndexRoute
-  AuthenticatedVouchersIndexRoute: typeof AuthenticatedVouchersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
-  AuthenticatedMerchantsIndexRoute: AuthenticatedMerchantsIndexRoute,
-  AuthenticatedVouchersIndexRoute: AuthenticatedVouchersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

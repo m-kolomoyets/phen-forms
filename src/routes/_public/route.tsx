@@ -1,27 +1,29 @@
-import type { AuthenticatedState, UnauthenticatedState } from '@/services/authExample/types';
+import type { AuthenticatedState, UnauthenticatedState } from '@/services/auth/types';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { getAuthToken } from '@/lib/utils/auth/tokens';
-import { meQueryOptions } from '@/services/authExample/queries';
+import { getSession } from '@/services/auth/api';
+import { meQueryOptions } from '@/services/auth/queries';
 
 export const Route = createFileRoute('/_public')({
     async beforeLoad({ context: { queryClient } }) {
-        if (!getAuthToken()) {
+        const session = await getSession();
+
+        if (!session) {
             return {
                 auth: {
-                    me: null,
+                    user: null,
                     isAuthenticated: false,
                 } satisfies UnauthenticatedState,
             };
         }
 
         try {
-            const me = await queryClient.ensureQueryData(meQueryOptions());
+            const user = await queryClient.ensureQueryData(meQueryOptions());
             return {
-                auth: { me, isAuthenticated: true } satisfies AuthenticatedState,
+                auth: { user, isAuthenticated: true } satisfies AuthenticatedState,
             };
         } catch {
             return {
-                auth: { me: null, isAuthenticated: false } satisfies UnauthenticatedState,
+                auth: { user: null, isAuthenticated: false } satisfies UnauthenticatedState,
             };
         }
     },

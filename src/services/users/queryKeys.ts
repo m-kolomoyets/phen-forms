@@ -7,7 +7,7 @@ export const usersKeys = {
     usersQueryKey(filters: Filters = {}) {
         return [...usersKeys.all(), 'list', filters] as const;
     },
-    userQueryKey(id: number) {
+    userQueryKey(id: string) {
         return [...usersKeys.all(), 'detail', id] as const;
     },
 };

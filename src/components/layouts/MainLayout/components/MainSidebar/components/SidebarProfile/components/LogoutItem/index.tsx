@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
-import { logoutMutationOptions } from '@/services/authExample/queries';
+import { logoutMutationOptions } from '@/services/auth/queries';
 import { DropdownMenuItem } from '@/components/ui/DropdownMenu';
 
 function LogoutItem() {

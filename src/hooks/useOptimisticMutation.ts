@@ -1,6 +1,4 @@
 import type { MutationFunction, MutationKey, MutationOptions, QueryKey } from '@tanstack/react-query';
-import type { HTTPError } from 'ky';
-import type { BaseErrorData } from '@/lib/@http';
 import { useMutation } from '@tanstack/react-query';
 
 type OptimisticProps<TData, TError, TVariables, TQueryFnData> = {
@@ -11,12 +9,7 @@ type OptimisticProps<TData, TError, TVariables, TQueryFnData> = {
     invalidates: QueryKey[];
 } & Omit<MutationOptions<TData, TError, TVariables>, 'mutationKey' | 'mutationFn' | 'onMutate' | 'onSettled'>;
 
-export const useOptimisticMutation = <
-    TData = unknown,
-    TError = HTTPError<BaseErrorData>,
-    TVariables = void,
-    TQueryFnData = unknown,
->({
+export const useOptimisticMutation = <TData = unknown, TError = Error, TVariables = void, TQueryFnData = unknown>({
     mutationKey,
     mutationFn,
     queryKey,

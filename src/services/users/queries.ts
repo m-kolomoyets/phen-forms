@@ -10,7 +10,7 @@ export const usersQueryOptions = (filters: Filters = {}) => {
     });
 };
 
-export const userQueryOptions = (id: number) => {
+export const userQueryOptions = (id: string) => {
     return queryOptions({
         queryKey: usersKeys.userQueryKey(id),
         queryFn() {

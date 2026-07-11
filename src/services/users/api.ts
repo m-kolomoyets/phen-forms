@@ -1,13 +1,17 @@
-import type { Options } from 'ky';
-import type { User, UsersData } from './types';
-import { httpPrivate } from '@/lib/@http';
+import { supabase } from '@/lib/@supabase';
 
-export const getUsers = async (options?: Options) => {
-    const res = await httpPrivate.get<UsersData>('users', options);
-    return res.json();
+export const getUsers = async () => {
+    const { data, error } = await supabase.from('users').select('*');
+    if (error) {
+        throw error;
+    }
+    return data;
 };
 
-export const getUser = async (id: number, options?: Options) => {
-    const res = await httpPrivate.get<User>(`users/${id}`, options);
-    return res.json();
+export const getUser = async (id: string) => {
+    const { data, error } = await supabase.from('users').select('*').eq('id', id).single();
+    if (error) {
+        throw error;
+    }
+    return data;
 };
