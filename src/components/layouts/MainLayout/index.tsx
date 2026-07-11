@@ -10,7 +10,7 @@ function MainLayout(props: MainLayoutProps) {
         <SidebarProvider defaultOpen={getCookieByName(SIDEBAR_COOKIE_NAME) === 'true'} {...props}>
             <MainSidebar />
             <SidebarInset>
-                <div className="flex flex-1 flex-col gap-4 p-6">
+                <div className="flex min-h-0 flex-1 flex-col gap-4 p-6">
                     <Outlet />
                 </div>
             </SidebarInset>

@@ -1,18 +1,67 @@
 import type { QuestionnaireCardProps } from './types';
-import { EllipsisVerticalIcon, PencilIcon, Trash2Icon } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import {
+    EllipsisVerticalIcon,
+    EyeIcon,
+    LinkIcon,
+    ListChecksIcon,
+    MessageSquareTextIcon,
+    PencilIcon,
+    PencilLineIcon,
+    SendIcon,
+    Trash2Icon,
+    UndoIcon,
+    UsersIcon,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/DropdownMenu';
 import { QUESTIONNAIRE_STATUS_BADGE } from '../../constants';
 
-function QuestionnaireCard({ questionnaire, onEdit, onDelete }: QuestionnaireCardProps) {
+function QuestionnaireCard({
+    questionnaire,
+    onRename,
+    onDelete,
+    onToggleStatus,
+    onPreview,
+    onManageAccess,
+}: QuestionnaireCardProps) {
     const status = QUESTIONNAIRE_STATUS_BADGE[questionnaire.status];
+    const isDraft = questionnaire.status === 'draft';
+
+    const handleCopyLink = async () => {
+        const url = `${window.location.origin}/f/${questionnaire.id}`;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('Link copied.');
+        } catch {
+            toast.error('Copy failed.');
+        }
+    };
 
     return (
         <article className="flex flex-col gap-3 rounded-xl border p-4">
             <div className="flex items-start justify-between gap-2">
                 <div className="flex flex-col gap-1 overflow-hidden">
-                    <h2 className="truncate font-medium">{questionnaire.title}</h2>
+                    <h2 className="truncate font-medium">
+                        <Link
+                            to="/questionnaires/$questionnaireId"
+                            params={{ questionnaireId: questionnaire.id }}
+                            className="hover:underline"
+                        >
+                            {questionnaire.title}
+                        </Link>
+                    </h2>
                     {!!questionnaire.description && (
                         <p className="line-clamp-2 text-sm text-muted-foreground">{questionnaire.description}</p>
                     )}
@@ -23,15 +72,77 @@ function QuestionnaireCard({ questionnaire, onEdit, onDelete }: QuestionnaireCar
                     >
                         <EllipsisVerticalIcon />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-60">
                         <DropdownMenuItem
                             onClick={() => {
-                                onEdit(questionnaire);
+                                onToggleStatus(questionnaire);
                             }}
                         >
-                            <PencilIcon />
-                            Edit
+                            {isDraft ? <SendIcon /> : <UndoIcon />}
+                            {isDraft ? 'Publish' : 'Unpublish'}
                         </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>View</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                disabled={!onPreview}
+                                onClick={() => {
+                                    onPreview?.(questionnaire);
+                                }}
+                            >
+                                <EyeIcon />
+                                Preview as recipient
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>Edit</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    onRename(questionnaire);
+                                }}
+                            >
+                                <PencilLineIcon />
+                                Rename
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                render={
+                                    <Link
+                                        to="/questionnaires/$questionnaireId"
+                                        params={{ questionnaireId: questionnaire.id }}
+                                    />
+                                }
+                            >
+                                <PencilIcon />
+                                Edit questions
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>Access</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={handleCopyLink}>
+                                <LinkIcon />
+                                Copy link to fill
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                disabled={!onManageAccess}
+                                onClick={() => {
+                                    onManageAccess?.(questionnaire);
+                                }}
+                            >
+                                <UsersIcon />
+                                Manage access
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+
+                        <DropdownMenuSeparator />
+
                         <DropdownMenuItem
                             variant="destructive"
                             onClick={() => {
@@ -44,6 +155,18 @@ function QuestionnaireCard({ questionnaire, onEdit, onDelete }: QuestionnaireCar
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                    <ListChecksIcon className="size-4" />
+                    {questionnaire.questionsCount} questions
+                </span>
+                <span className="flex items-center gap-1.5">
+                    <MessageSquareTextIcon className="size-4" />
+                    {questionnaire.responsesCount} responses
+                </span>
+            </div>
+
             <Badge variant={status.variant}>{status.label}</Badge>
         </article>
     );

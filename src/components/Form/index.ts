@@ -3,6 +3,7 @@ import { createFormHook } from '@tanstack/react-form';
 import { fieldContext, formContext } from './context/FormContext';
 import { FormFieldWrapper } from './components/FormFieldWrapper';
 import { InputField } from './components/InputField';
+import { TextareaField } from './components/TextareaField';
 
 // NOTE: Tree-shaking field components if needed
 const PasswordInputField = lazy(async () => {
@@ -19,6 +20,7 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     fieldComponents: {
         FormFieldWrapper,
         InputField,
+        TextareaField,
         PasswordInputField,
     },
     formComponents: {},

@@ -13,7 +13,7 @@ function SidebarTeam() {
                                 <img src="/icon.svg" className="size-8" alt="" aria-hidden={true} />
                             </span>
                             <span className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">Phenomenon admin panel</span>
+                                <span className="truncate font-semibold">Questionnaire Builder</span>
                             </span>
                         </Link>
                     }

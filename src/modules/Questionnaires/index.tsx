@@ -1,12 +1,12 @@
-import type { Questionnaire } from '@/services/questionnaires/types';
+import type { Questionnaire, QuestionnaireListItem } from '@/services/questionnaires/types';
 import { useState } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { PlusIcon } from 'lucide-react';
-import { questionnairesQueryOptions } from '@/services/questionnaires/queries';
+import { questionnairesQueryOptions, updateQuestionnaireMutationOptions } from '@/services/questionnaires/queries';
 import { MainLayoutHeader } from '@/components/layouts/MainLayoutHeader';
 import { Button } from '@/components/ui/Button';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/Empty';
-import { DeleteQuestionnaireSheet } from './components/DeleteQuestionnaireSheet';
+import { DeleteQuestionnaireDialog } from './components/DeleteQuestionnaireDialog';
 import { QuestionnaireCard } from './components/QuestionnaireCard';
 import { QuestionnaireFormSheet } from './components/QuestionnaireFormSheet';
 
@@ -27,6 +27,15 @@ function Questionnaires() {
         setIsFormOpen(true);
     };
 
+    const { mutate: updateStatus } = useMutation(updateQuestionnaireMutationOptions());
+
+    const toggleStatus = (questionnaire: QuestionnaireListItem) => {
+        updateStatus({
+            id: questionnaire.id,
+            status: questionnaire.status === 'draft' ? 'published' : 'draft',
+        });
+    };
+
     return (
         <>
             <MainLayoutHeader className="justify-between">
@@ -44,8 +53,9 @@ function Questionnaires() {
                             <QuestionnaireCard
                                 key={questionnaire.id}
                                 questionnaire={questionnaire}
-                                onEdit={openEdit}
+                                onRename={openEdit}
                                 onDelete={setDeleting}
+                                onToggleStatus={toggleStatus}
                             />
                         );
                     })}
@@ -71,7 +81,7 @@ function Questionnaires() {
             />
 
             {!!deleting && (
-                <DeleteQuestionnaireSheet
+                <DeleteQuestionnaireDialog
                     open={!!deleting}
                     onOpenChange={(open) => {
                         if (!open) {

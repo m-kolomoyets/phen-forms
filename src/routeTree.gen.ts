@@ -16,6 +16,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as UnauthenticatedLoginIndexRouteImport } from './routes/_unauthenticated/login/index'
 import { Route as AuthenticatedQuestionnairesIndexRouteImport } from './routes/_authenticated/questionnaires/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
+import { Route as AuthenticatedQuestionnairesQuestionnaireIdIndexRouteImport } from './routes/_authenticated/questionnaires/$questionnaireId/index'
 
 const UnauthenticatedRouteRoute = UnauthenticatedRouteRouteImport.update({
   id: '/_unauthenticated',
@@ -52,18 +53,26 @@ const AuthenticatedDashboardIndexRoute =
     path: '/dashboard/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedQuestionnairesQuestionnaireIdIndexRoute =
+  AuthenticatedQuestionnairesQuestionnaireIdIndexRouteImport.update({
+    id: '/questionnaires/$questionnaireId/',
+    path: '/questionnaires/$questionnaireId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/questionnaires/': typeof AuthenticatedQuestionnairesIndexRoute
   '/login/': typeof UnauthenticatedLoginIndexRoute
+  '/questionnaires/$questionnaireId/': typeof AuthenticatedQuestionnairesQuestionnaireIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/questionnaires': typeof AuthenticatedQuestionnairesIndexRoute
   '/login': typeof UnauthenticatedLoginIndexRoute
+  '/questionnaires/$questionnaireId': typeof AuthenticatedQuestionnairesQuestionnaireIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -74,12 +83,23 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/questionnaires/': typeof AuthenticatedQuestionnairesIndexRoute
   '/_unauthenticated/login/': typeof UnauthenticatedLoginIndexRoute
+  '/_authenticated/questionnaires/$questionnaireId/': typeof AuthenticatedQuestionnairesQuestionnaireIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard/' | '/questionnaires/' | '/login/'
+  fullPaths:
+    | '/'
+    | '/dashboard/'
+    | '/questionnaires/'
+    | '/login/'
+    | '/questionnaires/$questionnaireId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/questionnaires' | '/login'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/questionnaires'
+    | '/login'
+    | '/questionnaires/$questionnaireId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -89,6 +109,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/'
     | '/_authenticated/questionnaires/'
     | '/_unauthenticated/login/'
+    | '/_authenticated/questionnaires/$questionnaireId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -148,17 +169,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/questionnaires/$questionnaireId/': {
+      id: '/_authenticated/questionnaires/$questionnaireId/'
+      path: '/questionnaires/$questionnaireId'
+      fullPath: '/questionnaires/$questionnaireId/'
+      preLoaderRoute: typeof AuthenticatedQuestionnairesQuestionnaireIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedQuestionnairesIndexRoute: typeof AuthenticatedQuestionnairesIndexRoute
+  AuthenticatedQuestionnairesQuestionnaireIdIndexRoute: typeof AuthenticatedQuestionnairesQuestionnaireIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedQuestionnairesIndexRoute: AuthenticatedQuestionnairesIndexRoute,
+  AuthenticatedQuestionnairesQuestionnaireIdIndexRoute:
+    AuthenticatedQuestionnairesQuestionnaireIdIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

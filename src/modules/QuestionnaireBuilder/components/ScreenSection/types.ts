@@ -1,7 +1,8 @@
 import type { Questionnaire } from '@/services/questionnaires/types';
 
-export type DeleteQuestionnaireSheetProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+export type ScreenKind = 'welcome' | 'ending';
+
+export type ScreenSectionProps = {
+    kind: ScreenKind;
     questionnaire: Questionnaire;
 };

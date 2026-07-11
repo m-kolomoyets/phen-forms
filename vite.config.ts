@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import path from 'path';
 import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
@@ -79,6 +80,10 @@ export default defineConfig(({ mode }) => {
         },
         preview: {
             port: 9111,
+        },
+        test: {
+            environment: 'node',
+            globals: false,
         },
     };
 });

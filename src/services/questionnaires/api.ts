@@ -2,13 +2,22 @@ import type { CreateQuestionnairePayload, UpdateQuestionnairePayload } from './t
 import { supabase } from '@/lib/@supabase';
 
 export const getQuestionnaires = async () => {
-    const { data, error } = await supabase.from('questionnaires').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase
+        .from('questionnaires')
+        .select('*, questions(count), responses(count)')
+        .order('created_at', { ascending: false });
 
     if (error) {
         throw error;
     }
 
-    return data;
+    return data.map(({ questions, responses, ...questionnaire }) => {
+        return {
+            ...questionnaire,
+            questionsCount: questions[0]?.count ?? 0,
+            responsesCount: responses[0]?.count ?? 0,
+        };
+    });
 };
 
 export const getQuestionnaire = async (id: string) => {
