@@ -14,6 +14,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as UnauthenticatedLoginIndexRouteImport } from './routes/_unauthenticated/login/index'
+import { Route as AuthenticatedQuestionnairesIndexRouteImport } from './routes/_authenticated/questionnaires/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const UnauthenticatedRouteRoute = UnauthenticatedRouteRouteImport.update({
@@ -39,6 +40,12 @@ const UnauthenticatedLoginIndexRoute =
     path: '/login/',
     getParentRoute: () => UnauthenticatedRouteRoute,
   } as any)
+const AuthenticatedQuestionnairesIndexRoute =
+  AuthenticatedQuestionnairesIndexRouteImport.update({
+    id: '/questionnaires/',
+    path: '/questionnaires/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -49,11 +56,13 @@ const AuthenticatedDashboardIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/questionnaires/': typeof AuthenticatedQuestionnairesIndexRoute
   '/login/': typeof UnauthenticatedLoginIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/questionnaires': typeof AuthenticatedQuestionnairesIndexRoute
   '/login': typeof UnauthenticatedLoginIndexRoute
 }
 export interface FileRoutesById {
@@ -63,13 +72,14 @@ export interface FileRoutesById {
   '/_unauthenticated': typeof UnauthenticatedRouteRouteWithChildren
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/questionnaires/': typeof AuthenticatedQuestionnairesIndexRoute
   '/_unauthenticated/login/': typeof UnauthenticatedLoginIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard/' | '/login/'
+  fullPaths: '/' | '/dashboard/' | '/questionnaires/' | '/login/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login'
+  to: '/' | '/dashboard' | '/questionnaires' | '/login'
   id:
     | '__root__'
     | '/_authenticated'
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/_unauthenticated'
     | '/_public/'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/questionnaires/'
     | '/_unauthenticated/login/'
   fileRoutesById: FileRoutesById
 }
@@ -123,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthenticatedLoginIndexRouteImport
       parentRoute: typeof UnauthenticatedRouteRoute
     }
+    '/_authenticated/questionnaires/': {
+      id: '/_authenticated/questionnaires/'
+      path: '/questionnaires'
+      fullPath: '/questionnaires/'
+      preLoaderRoute: typeof AuthenticatedQuestionnairesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -135,10 +153,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedQuestionnairesIndexRoute: typeof AuthenticatedQuestionnairesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  AuthenticatedQuestionnairesIndexRoute: AuthenticatedQuestionnairesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -1,6 +1,6 @@
 import type { LinkProps } from '@tanstack/react-router';
 import type { LucideIcon } from 'lucide-react';
-import { LayoutDashboardIcon } from 'lucide-react';
+import { ClipboardListIcon, LayoutDashboardIcon } from 'lucide-react';
 
 type SidebarNavigationLinkItem = {
     label: string;
@@ -14,6 +14,13 @@ export const SIDEBAR_NAVIGATION_LINK_LIST: SidebarNavigationLinkItem[] = [
         Icon: LayoutDashboardIcon,
         linkProps: {
             to: '/dashboard',
+        },
+    },
+    {
+        label: 'Questionnaires',
+        Icon: ClipboardListIcon,
+        linkProps: {
+            to: '/questionnaires',
         },
     },
 ];
