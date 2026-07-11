@@ -150,6 +150,45 @@ export type Database = {
                     },
                 ];
             };
+            questionnaire_shares: {
+                Row: {
+                    can_edit: boolean;
+                    can_view_responses: boolean;
+                    created_at: string;
+                    questionnaire_id: string;
+                    user_id: string;
+                };
+                Insert: {
+                    can_edit?: boolean;
+                    can_view_responses?: boolean;
+                    created_at?: string;
+                    questionnaire_id: string;
+                    user_id: string;
+                };
+                Update: {
+                    can_edit?: boolean;
+                    can_view_responses?: boolean;
+                    created_at?: string;
+                    questionnaire_id?: string;
+                    user_id?: string;
+                };
+                Relationships: [
+                    {
+                        foreignKeyName: 'questionnaire_shares_questionnaire_id_fkey';
+                        columns: ['questionnaire_id'];
+                        isOneToOne: false;
+                        referencedRelation: 'questionnaires';
+                        referencedColumns: ['id'];
+                    },
+                    {
+                        foreignKeyName: 'questionnaire_shares_user_id_fkey';
+                        columns: ['user_id'];
+                        isOneToOne: false;
+                        referencedRelation: 'users';
+                        referencedColumns: ['id'];
+                    },
+                ];
+            };
             questions: {
                 Row: {
                     config: Json;
@@ -228,6 +267,7 @@ export type Database = {
             };
             users: {
                 Row: {
+                    avatar_url: string | null;
                     created_at: string;
                     email: string;
                     first_name: string | null;
@@ -235,6 +275,7 @@ export type Database = {
                     last_name: string | null;
                 };
                 Insert: {
+                    avatar_url?: string | null;
                     created_at?: string;
                     email: string;
                     first_name?: string | null;
@@ -242,6 +283,7 @@ export type Database = {
                     last_name?: string | null;
                 };
                 Update: {
+                    avatar_url?: string | null;
                     created_at?: string;
                     email?: string;
                     first_name?: string | null;
@@ -258,6 +300,14 @@ export type Database = {
             get_questionnaire_stats: {
                 Args: { p_questionnaire_id: string };
                 Returns: Json;
+            };
+            my_access: {
+                Args: { p_questionnaire_id: string };
+                Returns: string;
+            };
+            share_questionnaire: {
+                Args: { p_email: string; p_questionnaire_id: string; p_role: string };
+                Returns: string;
             };
             submit_response: {
                 Args: { p_answers: Json; p_questionnaire_id: string };

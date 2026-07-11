@@ -15,6 +15,8 @@ import {
     UsersIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getNameInitials } from '@/lib/utils/getNameInitials';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import {
@@ -26,7 +28,17 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
-import { QUESTIONNAIRE_STATUS_BADGE } from '../../constants';
+import { QUESTIONNAIRE_ROLE_LABEL, QUESTIONNAIRE_STATUS_BADGE } from '../../constants';
+
+const ownerName = (owner: QuestionnaireCardProps['questionnaire']['owner']) => {
+    if (!owner) {
+        return 'Unknown owner';
+    }
+
+    const name = [owner.first_name, owner.last_name].filter(Boolean).join(' ').trim();
+
+    return name.length > 0 ? name : owner.email;
+};
 
 function QuestionnaireCard({
     questionnaire,
@@ -38,6 +50,11 @@ function QuestionnaireCard({
 }: QuestionnaireCardProps) {
     const status = QUESTIONNAIRE_STATUS_BADGE[questionnaire.status];
     const isDraft = questionnaire.status === 'draft';
+    const isOwner = questionnaire.role === 'owner';
+    // A live collection with responses is protected: unpublish or close it first.
+    const isDeleteBlocked = questionnaire.status === 'published' && questionnaire.responsesCount > 0;
+    const canEdit = questionnaire.role !== 'viewer';
+    const sharedWithCount = questionnaire.sharesCount;
 
     const handleCopyLink = async () => {
         const url = `${window.location.origin}/q/${questionnaire.id}`;
@@ -74,16 +91,20 @@ function QuestionnaireCard({
                         <EllipsisVerticalIcon />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-60">
-                        <DropdownMenuItem
-                            onClick={() => {
-                                onToggleStatus(questionnaire);
-                            }}
-                        >
-                            {isDraft ? <SendIcon /> : <UndoIcon />}
-                            {isDraft ? 'Publish' : 'Unpublish'}
-                        </DropdownMenuItem>
+                        {canEdit && (
+                            <>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        onToggleStatus(questionnaire);
+                                    }}
+                                >
+                                    {isDraft ? <SendIcon /> : <UndoIcon />}
+                                    {isDraft ? 'Publish' : 'Unpublish'}
+                                </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                                <DropdownMenuSeparator />
+                            </>
+                        )}
 
                         <DropdownMenuGroup>
                             <DropdownMenuLabel>View</DropdownMenuLabel>
@@ -109,30 +130,34 @@ function QuestionnaireCard({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
 
-                        <DropdownMenuSeparator />
+                        {canEdit && (
+                            <>
+                                <DropdownMenuSeparator />
 
-                        <DropdownMenuGroup>
-                            <DropdownMenuLabel>Edit</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    onRename(questionnaire);
-                                }}
-                            >
-                                <PencilLineIcon />
-                                Rename
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                render={
-                                    <Link
-                                        to="/questionnaires/$questionnaireId"
-                                        params={{ questionnaireId: questionnaire.id }}
-                                    />
-                                }
-                            >
-                                <PencilIcon />
-                                Edit questions
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuLabel>Edit</DropdownMenuLabel>
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            onRename(questionnaire);
+                                        }}
+                                    >
+                                        <PencilLineIcon />
+                                        Rename
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        render={
+                                            <Link
+                                                to="/questionnaires/$questionnaireId"
+                                                params={{ questionnaireId: questionnaire.id }}
+                                            />
+                                        }
+                                    >
+                                        <PencilIcon />
+                                        Edit questions
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </>
+                        )}
 
                         <DropdownMenuSeparator />
 
@@ -142,28 +167,40 @@ function QuestionnaireCard({
                                 <LinkIcon />
                                 Copy link to fill
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                disabled={!onManageAccess}
-                                onClick={() => {
-                                    onManageAccess?.(questionnaire);
-                                }}
-                            >
-                                <UsersIcon />
-                                Manage access
-                            </DropdownMenuItem>
+                            {isOwner && (
+                                <DropdownMenuItem
+                                    disabled={!onManageAccess}
+                                    onClick={() => {
+                                        onManageAccess?.(questionnaire);
+                                    }}
+                                >
+                                    <UsersIcon />
+                                    Manage access
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuGroup>
 
-                        <DropdownMenuSeparator />
+                        {isOwner && (
+                            <>
+                                <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                            variant="destructive"
-                            onClick={() => {
-                                onDelete(questionnaire);
-                            }}
-                        >
-                            <Trash2Icon />
-                            Delete
-                        </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    disabled={isDeleteBlocked}
+                                    onClick={() => {
+                                        onDelete(questionnaire);
+                                    }}
+                                >
+                                    <Trash2Icon />
+                                    Delete
+                                </DropdownMenuItem>
+                                {isDeleteBlocked && (
+                                    <p className="px-2 py-1 text-xs text-muted-foreground">
+                                        Unpublish or close to delete a questionnaire with responses.
+                                    </p>
+                                )}
+                            </>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -179,7 +216,29 @@ function QuestionnaireCard({
                 </span>
             </div>
 
-            <Badge variant={status.variant}>{status.label}</Badge>
+            <div className="flex flex-wrap items-center gap-2">
+                <Badge variant={status.variant}>{status.label}</Badge>
+
+                {isOwner
+                    ? sharedWithCount > 0 && (
+                          <Badge variant="outline">
+                              <UsersIcon />
+                              Shared with {sharedWithCount}
+                          </Badge>
+                      )
+                    : !!questionnaire.owner && (
+                          <div className="flex items-center gap-2">
+                              <Badge variant="secondary">Shared · {QUESTIONNAIRE_ROLE_LABEL[questionnaire.role]}</Badge>
+                              <Avatar size="sm" title={ownerName(questionnaire.owner)}>
+                                  <AvatarImage
+                                      src={questionnaire.owner.avatar_url ?? undefined}
+                                      alt={ownerName(questionnaire.owner)}
+                                  />
+                                  <AvatarFallback>{getNameInitials(ownerName(questionnaire.owner))}</AvatarFallback>
+                              </Avatar>
+                          </div>
+                      )}
+            </div>
         </article>
     );
 }

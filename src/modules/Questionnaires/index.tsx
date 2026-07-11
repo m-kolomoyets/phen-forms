@@ -7,6 +7,7 @@ import { MainLayoutHeader } from '@/components/layouts/MainLayoutHeader';
 import { Button } from '@/components/ui/Button';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/Empty';
 import { DeleteQuestionnaireDialog } from './components/DeleteQuestionnaireDialog';
+import { ManageAccessDialog } from './components/ManageAccessDialog';
 import { QuestionnaireCard } from './components/QuestionnaireCard';
 import { QuestionnaireFormSheet } from './components/QuestionnaireFormSheet';
 
@@ -16,6 +17,7 @@ function Questionnaires() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editing, setEditing] = useState<Questionnaire | undefined>(undefined);
     const [deleting, setDeleting] = useState<Questionnaire | undefined>(undefined);
+    const [managingAccess, setManagingAccess] = useState<QuestionnaireListItem | undefined>(undefined);
 
     const openCreate = () => {
         setEditing(undefined);
@@ -56,6 +58,7 @@ function Questionnaires() {
                                 onRename={openEdit}
                                 onDelete={setDeleting}
                                 onToggleStatus={toggleStatus}
+                                onManageAccess={setManagingAccess}
                             />
                         );
                     })}
@@ -89,6 +92,18 @@ function Questionnaires() {
                         }
                     }}
                     questionnaire={deleting}
+                />
+            )}
+
+            {!!managingAccess && (
+                <ManageAccessDialog
+                    open={!!managingAccess}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            setManagingAccess(undefined);
+                        }
+                    }}
+                    questionnaire={managingAccess}
                 />
             )}
         </>

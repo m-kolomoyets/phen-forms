@@ -1,5 +1,6 @@
 import type { RouterContext } from '@/lib/@router';
 import { lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { noopReturnNull } from '@/lib/utils/noopReturnNull';
 import { Toast } from '@/components/ui/Toast';
@@ -29,7 +30,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
             <>
                 <TooltipProvider>
                     <Outlet />
-                    <Toast richColors={true} closeButton={true} swipeDirections={['bottom']} />
+                    {/* Portal to body: #root is `isolate` (own stacking context), so a toaster
+                        rendered inside it would sit below body-portaled dialogs. */}
+                    {createPortal(
+                        <Toast richColors={true} closeButton={true} swipeDirections={['bottom']} />,
+                        document.body
+                    )}
                 </TooltipProvider>
                 <Suspense>
                     <TanStackRouterDevtools position="bottom-right" />
