@@ -297,9 +297,25 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
+            admin_list_users: {
+                Args: Record<PropertyKey, never>;
+                Returns: Json[];
+            };
+            admin_transfer_ownership: {
+                Args: { p_new_owner: string; p_questionnaire_id: string };
+                Returns: string;
+            };
+            am_i_admin: {
+                Args: Record<PropertyKey, never>;
+                Returns: boolean;
+            };
             get_questionnaire_stats: {
                 Args: { p_questionnaire_id: string };
                 Returns: Json;
+            };
+            list_my_questionnaires: {
+                Args: Record<PropertyKey, never>;
+                Returns: Json[];
             };
             my_access: {
                 Args: { p_questionnaire_id: string };

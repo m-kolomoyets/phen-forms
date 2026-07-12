@@ -13,13 +13,14 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/AlertDialog';
 
-function DeleteQuestionnaireDialog({ open, onOpenChange, questionnaire }: DeleteQuestionnaireDialogProps) {
+function DeleteQuestionnaireDialog({ open, onOpenChange, questionnaire, onDeleted }: DeleteQuestionnaireDialogProps) {
     const { mutate: deleteQuestionnaire, isPending } = useMutation(deleteQuestionnaireMutationOptions());
 
     const handleDelete = () => {
         deleteQuestionnaire(questionnaire.id, {
             onSuccess() {
                 toast.success('Questionnaire deleted');
+                onDeleted?.();
                 onOpenChange(false);
             },
             onError(error) {

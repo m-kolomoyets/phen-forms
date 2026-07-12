@@ -3,7 +3,9 @@ export type ShareRole = 'editor' | 'viewer';
 export type ShareStatus = 'shared' | 'not_found' | 'self' | 'forbidden';
 
 // Current user's role on a questionnaire; null when they have no access.
-export type MyAccess = 'owner' | 'editor' | 'viewer' | null;
+// 'admin' is the app-level override, returned only when the caller has no real
+// (owner/editor/viewer) relationship — it grants full edit/view via reused screens.
+export type MyAccess = 'owner' | 'editor' | 'viewer' | 'admin' | null;
 
 export type ShareQuestionnairePayload = {
     questionnaireId: string;

@@ -1,51 +1,19 @@
-import type { CreateQuestionnairePayload, QuestionnaireRole, UpdateQuestionnairePayload } from './types';
+import type { CreateQuestionnairePayload, QuestionnaireListItem, UpdateQuestionnairePayload } from './types';
 import { supabase } from '@/lib/@supabase';
 
-export const getQuestionnaires = async () => {
-    const {
-        data: { user },
-        error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError) {
-        throw userError;
-    }
-
-    // RLS returns owned + shared-with-me rows. The embedded shares resource is
-    // owner-scoped by its own policy: for an owned questionnaire it returns every
-    // collaborator (drives "Shared with N"); for a shared-with-me one it returns
-    // only my row (drives my role).
-    const { data, error } = await supabase
-        .from('questionnaires')
-        .select(
-            '*, questions(count), responses(count), owner:users!owner_id(id, email, first_name, last_name, avatar_url), shares:questionnaire_shares(user_id, can_edit)'
-        )
-        .order('created_at', { ascending: false });
+// The normal list is deliberately an RPC, not a plain `.select()`: list_my_questionnaires
+// is explicitly scoped to owned + shared-with-me rows and so is immune to the admin
+// SELECT widening (a plain select would leak every questionnaire to an admin here).
+// The RPC assembles the full list-item shape (counts, owner, role, sharesCount)
+// server-side, so there is no client-side role/count assembly anymore.
+export const getQuestionnaires = async (): Promise<QuestionnaireListItem[]> => {
+    const { data, error } = await supabase.rpc('list_my_questionnaires');
 
     if (error) {
         throw error;
     }
 
-    const myId = user?.id ?? null;
-
-    return data.map(({ questions, responses, owner, shares, ...questionnaire }) => {
-        const isOwner = questionnaire.owner_id === myId;
-        const myShare = shares.find((share) => {
-            return share.user_id === myId;
-        });
-
-        const sharedRole: QuestionnaireRole = myShare?.can_edit ? 'editor' : 'viewer';
-        const role: QuestionnaireRole = isOwner ? 'owner' : sharedRole;
-
-        return {
-            ...questionnaire,
-            questionsCount: questions[0]?.count ?? 0,
-            responsesCount: responses[0]?.count ?? 0,
-            owner,
-            role,
-            sharesCount: shares.length,
-        };
-    });
+    return (data ?? []) as unknown as QuestionnaireListItem[];
 };
 
 export const getQuestionnaire = async (id: string) => {
